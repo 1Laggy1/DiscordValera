@@ -3,5 +3,6 @@
     public static string Token;
     public static string Valera;    // ID Valera
     public static string ToNotify; // ID користувачів, розділені `;`
+    public static string SteamUrl;
     public static List<string> Gifs = new List<string>(); // Список GIF
 }

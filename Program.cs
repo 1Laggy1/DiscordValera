@@ -1,10 +1,12 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using DiscordValera;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Threading.Tasks;
 
 public class Program
@@ -30,7 +32,6 @@ public class Program
                              GatewayIntents.GuildPresences,
             AlwaysDownloadUsers = true
         };
-
         _client = new DiscordSocketClient(config);
         _client.Log += Log;
         _client.Ready += ReadyAsync;
@@ -38,6 +39,9 @@ public class Program
         // Підписуємось на подію
         OnCheckValeraStatus += CheckValeraStatusAsync;
         LoadConfig("config.json");
+        SteamChecker steam = new SteamChecker(botConfig.SteamUrl);
+
+        steam.ValeraGay += CheckValeraStatusAsync;
 
         await _client.LoginAsync(TokenType.Bot, Info.Token);
         await _client.StartAsync();
@@ -93,7 +97,7 @@ public class Program
                 Console.WriteLine($"Invalid user ID: {idString}");
             }
         }
-        OnCheckValeraStatus.Invoke();
+
     }
 
     private async Task CheckValeraStatusAsync()
@@ -131,6 +135,7 @@ public class Program
         }
     }
 
+
     private Task Log(LogMessage msg)
     {
         Console.WriteLine(msg.ToString());
@@ -149,6 +154,7 @@ public class Program
         Info.Token = botConfig.Token;
         Info.Valera = botConfig.Valera;
         Info.ToNotify = botConfig.ToNotify;
+        Info.SteamUrl = botConfig.SteamUrl;
         Info.Gifs = botConfig.Gifs;
     }
 }
