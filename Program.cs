@@ -39,7 +39,7 @@ public class Program
         // Підписуємось на подію
         OnCheckValeraStatus += CheckValeraStatusAsync;
         LoadConfig("config.json");
-        SteamChecker steam = new SteamChecker(botConfig.SteamUrl);
+        SteamChecker steam = new SteamChecker(botConfig.SteamUrl,valera);
 
         steam.ValeraGay += CheckValeraStatusAsync;
 

@@ -1,4 +1,5 @@
-﻿using HtmlAgilityPack;
+﻿using Discord;
+using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -17,9 +18,11 @@ namespace DiscordValera
         private static bool _isFirstCall = true;
         private string _steamUrl = "";
         private float _time = 0;
-        public SteamChecker(string steamUrl)
+        private IGuildUser _valera;
+        public SteamChecker(string steamUrl, IGuildUser valera)
         {
             _steamUrl = steamUrl;
+            _valera = valera;
             OnStart();
             
         }
@@ -40,7 +43,6 @@ namespace DiscordValera
                 string url = _steamUrl;
                 var web = new HtmlWeb();
                 var document = web.Load(url);
-
                 var nodes = document.DocumentNode.SelectNodes("//*[contains(@class, 'recentgame_quicklinks') and contains(@class, 'recentgame_recentplaytime')]");
                 var DATE = $"{DateTime.Now.Day}.{DateTime.Now.Month}  {DateTime.Now.Hour}:{DateTime.Now.Minute}:{DateTime.Now.Second}";
                 foreach (var node in nodes)
@@ -58,12 +60,15 @@ namespace DiscordValera
                     }
                     if (_time < dd)
                     {
-                        ValeraGay.Invoke();
                         _time = dd;
-                        timer.Enabled = false;
-                        await Task.Delay(3600000*3);
-                        timer.Enabled= true;
-                        _isFirstCall = true;
+                        if(_valera.Status == UserStatus.Offline)
+                        {
+                            ValeraGay.Invoke();
+                            timer.Enabled = false;
+                            await Task.Delay(3600000 * 3);
+                            timer.Enabled = true;
+                            _isFirstCall = true;
+                        } 
                     }
                     if (_time > dd)
                     {
